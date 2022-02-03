@@ -56,5 +56,50 @@ namespace Hilton_Movie_Collection.Controllers
                 return View();
             }
         }
+
+        public IActionResult ListMovie()
+        {
+            var movies = _daContext.newmovie
+                .Include(x => x.Category)
+                .Where(x => x.LentTo != "Sarah")
+                .OrderBy(x => x.Title)
+                .ToList();
+            return View(movies);
+        }
+
+        [HttpGet]
+        public IActionResult Edit (int movieid)
+        {
+            ViewBag.Categories = _daContext.Categories.ToList();
+
+            var movie = _daContext.newmovie.Single(x => x.MovieId == movieid);
+
+            return View("AddMovie", movie);
+        }
+
+        [HttpPost]
+        public IActionResult Edit (AddedMovie am)
+        {
+            _daContext.Update(am);
+            _daContext.SaveChanges();
+
+            return RedirectToAction("ListMovie");
+        }
+
+        [HttpGet]
+        public IActionResult Delete (int movieid)
+        {
+            var movie = _daContext.newmovie.Single(x => x.MovieId == movieid);
+
+            return View(movie);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(AddedMovie am)
+        {
+            _daContext.newmovie.Remove(am);
+            _daContext.SaveChanges();
+            return RedirectToAction("ListMovie");
+        }
     }
 }
