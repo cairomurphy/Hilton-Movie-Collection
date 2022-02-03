@@ -1,5 +1,6 @@
 ﻿using Hilton_Movie_Collection.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -11,27 +12,49 @@ namespace Hilton_Movie_Collection.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private MovieContext _daContext { get; set; }
 
-        public HomeController(ILogger<HomeController> logger)
+        //Constructor
+        public HomeController(MovieContext somename)
         {
-            _logger = logger;
+            _daContext = somename;
         }
 
+        //Home
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult Privacy()
+        //Podcasts
+        public IActionResult Podcasts()
         {
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        //AddMovie
+        [HttpGet]
+        public IActionResult AddMovie()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            ViewBag.Categories = _daContext.Categories.ToList();
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddMovie(AddedMovie am)
+        {
+            if (ModelState.IsValid)
+            {
+                _daContext.Add(am);
+                _daContext.SaveChanges();
+                return View("Confirmation", am);
+            }
+            else //If Invalid
+            {
+                ViewBag.Categories = _daContext.Categories.ToList();
+                return View();
+            }
         }
     }
 }

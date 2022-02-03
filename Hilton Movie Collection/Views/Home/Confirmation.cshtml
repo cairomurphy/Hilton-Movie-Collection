@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewData["Title"] = "Movie Submitted";
+}
+
+@model Hilton_Movie_Collection.Models.AddedMovie
+
+@if (Model.LentTo == "Sarah")
+{
+    <h2>You aint getting that movie back, bro.</h2>
+}
+else
+{
+    <h2>Movie received. We love, @Model.Title.</h2>
+}
+
+<a asp-controller="Home" asp-action="Index">Back to main page</a>
